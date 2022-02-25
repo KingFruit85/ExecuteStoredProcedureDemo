@@ -1,16 +1,13 @@
 ﻿using ExecuteStoredProcedureDemo.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ExecuteStoredProcedureDemo.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DatabaseController : Controller
+    public class DatabaseController : ControllerBase
     {
         [HttpGet]
         public List<Cake> Get()
@@ -69,5 +66,22 @@ namespace ExecuteStoredProcedureDemo.Controllers
 
         }
 
+        [HttpDelete]
+        public void Delete(string cakeType)
+        {
+            SqlConnection connection = new SqlConnection();
+
+            connection.ConnectionString = "Data Source=DESKTOP-8DRN3BN;Initial Catalog=StatusCakeDemo;Integrated Security=True";
+            connection.Open();
+
+            string procedureName = "[dbo].[delete_a_cake]";
+
+            using (SqlCommand command = new SqlCommand(procedureName, connection))
+            {
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.Add(new SqlParameter("@CakeType", cakeType));
+                command.ExecuteNonQuery();
+            }
+        }
     }
 }
